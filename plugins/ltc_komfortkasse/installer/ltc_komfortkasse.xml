@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xtcommerceplugin>
+  <title>Komfortkasse</title>
+  <version>1.2.2</version>
+  <minimumupdateversion>1.0.6</minimumupdateversion>
+  <code>ltc_komfortkasse</code>
+  <url>http://komfortkasse.eu</url>
+  <icon>komfortkasse_eu.png</icon>
+  <description>Automatische Zuordnung von Zahlungen</description>
+  <type>payment</type>
+  <configuration>
+    <config>
+      <key>KOMFORTKASSE_ACTIVATE_EXPORT</key>
+      <value>true</value>
+      <type>dropdown</type>
+      <url>conf_truefalse</url>
+      <de>
+        <title>Export Bestellungen</title>
+        <description>Export von Bestellungen aktiv</description>
+      </de>
+      <en>
+        <title>Export orders</title>
+        <description>Activate export of orders</description>
+      </en>
+    </config>
+    <config>
+      <key>KOMFORTKASSE_ACTIVATE_UPDATE</key>
+      <value>true</value>
+      <type>dropdown</type>
+      <url>conf_truefalse</url>
+      <de>
+        <title>Update Bestellungen</title>
+        <description>Update von Bestellungen aktiv</description>
+      </de>
+      <en>
+        <title>Update orders</title>
+        <description>Activate update of orders</description>
+      </en>
+    </config>
+    <config>
+      <key>KOMFORTKASSE_PAYMENT_CODES</key>
+      <value>xt_prepayment</value>
+      <de>
+        <title>Zahlungsart Codes</title>
+        <description>Alle Zahlungsart Codes die exportiert werden
+          sollen. Syntax: xt_prepayment,xt_invoice
+        </description>
+      </de>
+      <en>
+        <title>Payment type codes</title>
+        <description>All payment type codes that should be exported.
+          Syntax: xt_prepayment,xt_invoice
+        </description>
+      </en>
+    </config>
+    <config>
+      <key>KOMFORTKASSE_STATUS_OPEN</key>
+      <value>16,17</value>
+      <de>
+        <title>Status offen</title>
+        <description>Bestellstatus die fuer den Export beruecksichtigt
+          werden sollen (offene Bestellungen)
+        </description>
+      </de>
+      <en>
+        <title>State open</title>
+        <description>Order state that should be exported (open orders)
+        </description>
+      </en>
+    </config>
+    <config>
+      <key>KOMFORTKASSE_STATUS_PAID</key>
+      <value>23</value>
+      <de>
+        <title>Status Zahlung erhalten</title>
+        <description>Bestellstatus, auf den Bestellungen gesetzt werden
+          sollen zu denen eine Zahlung zugeordnet werden konnte.
+        </description>
+      </de>
+      <en>
+        <title>State paid</title>
+        <description>Order state that should be set when a payment has
+          been received.
+        </description>
+      </en>
+    </config>
+    <config>
+      <key>KOMFORTKASSE_STATUS_CANCELLED</key>
+      <value>34</value>
+      <de>
+        <title>Status Storniert</title>
+        <description>Bestellstatus, auf den Bestellungen gesetzt werden
+          sollen die storniert wurden (z.B. wegen Nicht-Bezahlung).
+        </description>
+      </de>
+      <en>
+        <title>State cancelled</title>
+        <description>Order state that should be set when an order has been cancelled.
+        </description>
+      </en>
+    </config>
+    <config>
+      <key>KOMFORTKASSE_ENCRYPTION</key>
+      <value></value>
+      <de>
+        <title>Verschluesselung</title>
+        <description>Auswahl der Verschluesselungstechnik
+          (openssl,base64)
+        </description>
+      </de>
+      <en>
+        <title>Encryption</title>
+        <description>Encryption technology (openssl,base64)
+        </description>
+      </en>
+    </config>
+    <config>
+      <key>KOMFORTKASSE_ACCESSCODE</key>
+      <value>undefined</value>
+      <de>
+        <title>Zugriffscode (verschluesselt)</title>
+        <description>Verschluesselter Zugriffscode. Nicht aendern! Wird
+          automatisch von Komfortkasse gesetzt.
+        </description>
+      </de>
+      <en>
+        <title>Access code (encrypted)</title>
+        <description>Encrypted access code. Do not change! Is set
+          automatically by komfortkasse.
+        </description>
+      </en>
+    </config>
+    <config>
+      <key>KOMFORTKASSE_APIKEY</key>
+      <value>undefined</value>
+      <de>
+        <title>API Schluessel</title>
+        <description>API Schluessel. Nicht aendern! Wird automatisch von
+          Komfortkasse gesetzt.
+        </description>
+      </de>
+      <en>
+        <title>API Key</title>
+        <description>API key. Do not change! Is set automatically by
+          komfortkasse.
+        </description>
+      </en>
+    </config>
+    <config>
+      <key>KOMFORTKASSE_PUBLICKEY</key>
+      <value>undefined</value>
+      <de>
+        <title>Oeffentlicher Schluessel</title>
+        <description>Schluessel zur Verschluesselung der Daten die an
+          Komfortkasse gesendet werden. Nicht aendern! Wird automatisch
+          von Komfortkasse gesetzt.
+        </description>
+      </de>
+      <en>
+        <title>Public key</title>
+        <description>Key for encrypting data that is sent to
+          komfortkasse. Do not change! Is set automatically by
+          komfortkasse.
+        </description>
+      </en>
+    </config>
+    <config>
+      <key>KOMFORTKASSE_PRIVATEKEY</key>
+      <value>undefined</value>
+      <de>
+        <title>Privater Schluessel</title>
+        <description>Schluessel zur Entschluesselung der Daten die von
+          Komfortkasse empfangen werden. Nicht aendern! Wird automatisch
+          von Komfortkasse gesetzt.
+        </description>
+      </de>
+      <en>
+        <title>Private key</title>
+        <description>Key for decrypting data that is received from
+          komfortkasse. Do not change! Is set automatically by
+          komfortkasse.
+        </description>
+      </en>
+    </config>
+  </configuration>
+  <plugin_code>
+    <code>
+      <hook>module_checkout.php:checkout_proccess_order_processed</hook>
+      <phpcode><![CDATA[
+			include_once(_SRV_WEBROOT . _SRV_WEB_PLUGINS . 'ltc_komfortkasse/Komfortkasse.php');
+			$k = new Komfortkasse();
+			$k->notifyorder($_SESSION['last_order_id']);
+ ]]></phpcode>
+      <order>1</order>
+      <active>1</active>
+    </code>
+    <code>
+      <hook>class.order.php:_updateOrderStatus_bottom</hook>
+      <phpcode><![CDATA[
+			include_once(_SRV_WEBROOT . _SRV_WEB_PLUGINS . 'ltc_komfortkasse/Komfortkasse.php');
+			$k = new Komfortkasse();
+			$k->notifyorder($this->oID);
+ ]]></phpcode>
+      <order>1</order>
+      <active>1</active>
+    </code>
+  </plugin_code>
+</xtcommerceplugin>
