@@ -24,7 +24,8 @@ if(!extension_loaded("IonCube Loader")) {
 	die;
 }
 
-include_once '../../xtCore/main.php';
+$basepath = explode('plugins', $_SERVER['SCRIPT_FILENAME']) ;
+require_once ($basepath[0].'xtCore/main.php');
 
 include_once 'Komfortkasse.php';
 

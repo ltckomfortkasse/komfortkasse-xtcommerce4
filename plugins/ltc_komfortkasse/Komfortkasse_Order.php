@@ -17,21 +17,61 @@ class Komfortkasse_Order {
 		global $db;
 		
 		$ret = array ();
-		$sql = "select orders_id from " . TABLE_ORDERS . " where orders_status in (" . Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open) . ") and ( ";
-		$paycodes = preg_split('/,/', Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods));
-		for($i = 0; $i < count($paycodes); $i++) {
-			$sql .= " payment_code like '" . $paycodes [$i] . "' ";
-			if ($i < count($paycodes) - 1) {
-				$sql .= " or ";
+		if (Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open) != '' && Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods) != '') {
+			$sql = "select orders_id from " . TABLE_ORDERS . " where orders_status in (" . Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open) . ") and ( ";
+			$paycodes = preg_split('/,/', Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods));
+			for($i = 0; $i < count($paycodes); $i++) {
+				$sql .= " payment_code like '" . $paycodes [$i] . "' ";
+				if ($i < count($paycodes) - 1) {
+					$sql .= " or ";
+				}
+			}
+			$sql .= " )";
+			$rs = $db->execute($sql);
+			
+			while ( !$rs->EOF ) {
+				$f = $rs->fields;
+				$ret [] = $f ['orders_id'];
+				$rs->moveNext();
 			}
 		}
-		$sql .= " )";
-		$rs = $db->execute($sql);
 		
-		while ( !$rs->EOF ) {
-			$f = $rs->fields;
-			$ret [] = $f ['orders_id'];
-			$rs->moveNext();
+		if (Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open_invoice) != '' && Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods_invoice) != '') {
+			$sql = "select orders_id from " . TABLE_ORDERS . " where orders_status in (" . Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open_invoice) . ") and ( ";
+			$paycodes = preg_split('/,/', Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods_invoice));
+			for($i = 0; $i < count($paycodes); $i++) {
+				$sql .= " payment_code like '" . $paycodes [$i] . "' ";
+				if ($i < count($paycodes) - 1) {
+					$sql .= " or ";
+				}
+			}
+			$sql .= " )";
+			$rs = $db->execute($sql);
+			
+			while ( !$rs->EOF ) {
+				$f = $rs->fields;
+				$ret [] = $f ['orders_id'];
+				$rs->moveNext();
+			}
+		}
+		
+		if (Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open_cod) != '' && Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods_cod) != '') {
+			$sql = "select orders_id from " . TABLE_ORDERS . " where orders_status in (" . Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open_cod) . ") and ( ";
+			$paycodes = preg_split('/,/', Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods_cod));
+			for($i = 0; $i < count($paycodes); $i++) {
+				$sql .= " payment_code like '" . $paycodes [$i] . "' ";
+				if ($i < count($paycodes) - 1) {
+					$sql .= " or ";
+				}
+			}
+			$sql .= " )";
+			$rs = $db->execute($sql);
+				
+			while ( !$rs->EOF ) {
+				$f = $rs->fields;
+				$ret [] = $f ['orders_id'];
+				$rs->moveNext();
+			}
 		}
 		return $ret;
 	}

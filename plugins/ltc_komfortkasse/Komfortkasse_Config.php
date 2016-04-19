@@ -13,6 +13,14 @@ class Komfortkasse_Config {
 	const status_open = 'KOMFORTKASSE_STATUS_OPEN';
 	const status_paid = 'KOMFORTKASSE_STATUS_PAID';
 	const status_cancelled = 'KOMFORTKASSE_STATUS_CANCELLED';
+	const payment_methods_invoice = 'KOMFORTKASSE_PAYMENT_CODES_INVOICE';
+	const status_open_invoice = 'KOMFORTKASSE_STATUS_OPEN_INVOICE';
+	const status_paid_invoice = 'KOMFORTKASSE_STATUS_PAID_INVOICE';
+	const status_cancelled_invoice = 'KOMFORTKASSE_STATUS_CANCELLED_INVOICE';
+	const payment_methods_cod = 'KOMFORTKASSE_PAYMENT_CODES_COD';
+	const status_open_cod = 'KOMFORTKASSE_STATUS_OPEN_COD';
+	const status_paid_cod = 'KOMFORTKASSE_STATUS_PAID_COD';
+	const status_cancelled_cod = 'KOMFORTKASSE_STATUS_CANCELLED_COD';
 	const encryption = 'KOMFORTKASSE_ENCRYPTION';
 	const accesscode = 'KOMFORTKASSE_ACCESSCODE';
 	const apikey = 'KOMFORTKASSE_APIKEY';

@@ -16,11 +16,15 @@
       <url>conf_truefalse</url>
       <de>
         <title>Export Bestellungen</title>
-        <description>Export von Bestellungen aktiv</description>
+        <description>
+        	Export von Bestellungen aktiv
+        </description>
       </de>
       <en>
         <title>Export orders</title>
-        <description>Activate export of orders</description>
+        <description>
+        	Activate export of orders
+        </description>
       </en>
     </config>
     <config>
@@ -30,26 +34,30 @@
       <url>conf_truefalse</url>
       <de>
         <title>Update Bestellungen</title>
-        <description>Update von Bestellungen aktiv</description>
+        <description>
+        	Update von Bestellungen aktiv
+        </description>
       </de>
       <en>
         <title>Update orders</title>
-        <description>Activate update of orders</description>
+        <description>
+        	Activate update of orders
+        </description>
       </en>
     </config>
     <config>
       <key>KOMFORTKASSE_PAYMENT_CODES</key>
       <value>xt_prepayment</value>
       <de>
-        <title>Zahlungsart Codes</title>
-        <description>Alle Zahlungsart Codes die exportiert werden
-          sollen. Syntax: xt_prepayment,xt_invoice
+        <title>Zahlungsart Codes fuer Vorkasse</title>
+        <description>
+        	Alle Zahlungsart Codes die exportiert werden sollen. Beispiel: xt_prepayment
         </description>
       </de>
       <en>
-        <title>Payment type codes</title>
-        <description>All payment type codes that should be exported.
-          Syntax: xt_prepayment,xt_invoice
+        <title>Prepayment: Payment type codes</title>
+        <description>
+        	All payment type codes that should be exported. Example: xt_prepayment
         </description>
       </en>
     </config>
@@ -57,14 +65,15 @@
       <key>KOMFORTKASSE_STATUS_OPEN</key>
       <value>16,17</value>
       <de>
-        <title>Status offen</title>
-        <description>Bestellstatus die fuer den Export beruecksichtigt
-          werden sollen (offene Bestellungen)
+        <title>Vorkasse: Status-Codes offen</title>
+        <description>
+        	Bestellstatus-Codes die fuer den Export beruecksichtigt werden sollen (offene Bestellungen) (kommagetrennt)
         </description>
       </de>
       <en>
-        <title>State open</title>
-        <description>Order state that should be exported (open orders)
+        <title>Prepayment: States open</title>
+        <description>
+        	Order states that should be exported (open orders) (comma-separated)
         </description>
       </en>
     </config>
@@ -72,15 +81,15 @@
       <key>KOMFORTKASSE_STATUS_PAID</key>
       <value>23</value>
       <de>
-        <title>Status Zahlung erhalten</title>
-        <description>Bestellstatus, auf den Bestellungen gesetzt werden
-          sollen zu denen eine Zahlung zugeordnet werden konnte.
+        <title>Vorkasse: Status Zahlung erhalten</title>
+        <description>
+        	Bestellstatus, auf den Bestellungen gesetzt werden sollen zu denen eine Vorkasse Zahlung eingegangen ist.
         </description>
       </de>
       <en>
-        <title>State paid</title>
-        <description>Order state that should be set when a payment has
-          been received.
+        <title>Prepayment: State paid</title>
+        <description>
+        	Order state that should be set when prepayment has been received.
         </description>
       </en>
     </config>
@@ -88,14 +97,141 @@
       <key>KOMFORTKASSE_STATUS_CANCELLED</key>
       <value>34</value>
       <de>
-        <title>Status Storniert</title>
-        <description>Bestellstatus, auf den Bestellungen gesetzt werden
-          sollen die storniert wurden (z.B. wegen Nicht-Bezahlung).
+        <title>Vorkasse: Status storniert</title>
+        <description>Bestellstatus, auf den Vorkasse-Bestellungen gesetzt werden sollen die storniert wurden.
         </description>
       </de>
       <en>
-        <title>State cancelled</title>
-        <description>Order state that should be set when an order has been cancelled.
+        <title>Prepayment: State cancelled</title>
+        <description>
+        	Order state that should be set when a prepayment order has been cancelled.
+        </description>
+      </en>
+    </config>  
+    <config>
+      <key>KOMFORTKASSE_PAYMENT_CODES_INVOICE</key>
+      <value>xt_invoice</value>
+      <de>
+        <title>Zahlungsart Codes fuer Rechnung</title>
+        <description>
+        	Alle Zahlungsart Codes die bei Zahlung auf Rechnung exportiert werden sollen. Beispiel: xt_invoice.
+        </description>
+      </de>
+      <en>
+        <title>Invoice: Payment type codes</title>
+        <description>
+        	All payment type codes that should be exported.
+          Example: xt_invoice
+        </description>
+      </en>
+    </config>
+    <config>
+      <key>KOMFORTKASSE_STATUS_OPEN_INVOICE</key>
+      <value>149</value>
+      <de>
+        <title>Rechnung: Status-Codes offen</title>
+        <description>
+        	Bestellstatus die fuer den Export beruecksichtigt werden sollen (offene Rechnungen) (kommagetrennt)
+        </description>
+      </de>
+      <en>
+        <title>Invoice: States open</title>
+        <description>
+        	Order states that should be exported (open invoices) (comma-separated)
+        </description>
+      </en>
+    </config>
+    <config>
+      <key>KOMFORTKASSE_STATUS_PAID_INVOICE</key>
+      <value></value>
+      <de>
+        <title>Rechnung: Status Zahlung erhalten</title>
+        <description>
+        	Bestellstatus, auf den Bestellungen gesetzt werden sollen zu denen eine Zahlung zu einer Rechnung eingegangen ist.
+        </description>
+      </de>
+      <en>
+        <title>Invoice: State paid</title>
+        <description>
+        	Order state that should be set when an invoice has been paid.
+        </description>
+      </en>
+    </config>
+    <config>
+      <key>KOMFORTKASSE_STATUS_CANCELLED_INVOICE</key>
+      <value>34</value>
+      <de>
+        <title>Rechnung: Status keine Zahlung/Inkasso</title>
+        <description>Bestellstatus, auf den Bestellungen bei Zahlung auf Rechnung gesetzt werden sollen bei denen keine Zahlung eingeht.
+        </description>
+      </de>
+      <en>
+        <title>Invoice: State no payment/debt collection</title>
+        <description>
+        	Order state that should be set when an invoice was not paid.
+        </description>
+      </en>
+    </config>
+    <config>
+      <key>KOMFORTKASSE_PAYMENT_CODES_COD</key>
+      <value>xt_cashondelivery</value>
+      <de>
+        <title>Zahlungsart Codes fuer Nachnahme</title>
+        <description>
+        	Alle Zahlungsart Codes die bei Nachname exportiert werden sollen. Beispiel: xt_cashondelivery.
+        </description>
+      </de>
+      <en>
+        <title>Prepayment: Payment type codes</title>
+        <description>
+        	All payment type codes that should be exported for COD (cash on delivery) orders. Example: xt_cashondelivery
+        </description>
+      </en>
+    </config>
+    <config>
+      <key>KOMFORTKASSE_STATUS_OPEN_COD</key>
+      <value>33</value>
+      <de>
+        <title>Nachname: Status-Codes versendet</title>
+        <description>
+        	Bestellstatus die fuer den Export beruecksichtigt werden sollen (versendete Nachnahme-Bestellungen) (kommagetrennt)
+        </description>
+      </de>
+      <en>
+        <title>COD: States dispatched</title>
+        <description>
+        	Order states that should be exported (dispatched COD parcel) (comma-separated)
+        </description>
+      </en>
+    </config>
+    <config>
+      <key>KOMFORTKASSE_STATUS_PAID_COD</key>
+      <value></value>
+      <de>
+        <title>Nachnahme: Status Zahlung erhalten</title>
+        <description>
+        	Bestellstatus, auf den Nachnahme-Bestellungen gesetzt werden sollen zu denen eine Zahlung eingegangen ist.
+        </description>
+      </de>
+      <en>
+        <title>Prepayment: COD: State paid</title>
+        <description>
+        	Order state that should be set when a COD order has been paid.
+        </description>
+      </en>
+    </config>
+    <config>
+      <key>KOMFORTKASSE_STATUS_CANCELLED_COD</key>
+      <value>34</value>
+      <de>
+        <title>Rechnung: Nachnahme: Status Zahlung ungeklaert</title>
+        <description>Bestellstatus, auf den Nachnahme-Bestellungen gesetzt werden sollen bei denen keine Zahlung eingeht.
+        </description>
+      </de>
+      <en>
+        <title>COD: State payment unresolved</title>
+        <description>
+        	Order state that should be set when an COD order was not paid.
         </description>
       </en>
     </config>
