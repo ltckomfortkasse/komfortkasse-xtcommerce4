@@ -1,10 +1,10 @@
 <?php
 
-/** 
+/**
  * Komfortkasse
  * Config Class
- * 
- * @version 1.0.7-xtc4
+ *
+ * @version 1.7.7-xtc4/5
  */
 class Komfortkasse_Config {
 	const activate_export = 'KOMFORTKASSE_ACTIVATE_EXPORT';
@@ -26,32 +26,32 @@ class Komfortkasse_Config {
 	const apikey = 'KOMFORTKASSE_APIKEY';
 	const publickey = 'KOMFORTKASSE_PUBLICKEY';
 	const privatekey = 'KOMFORTKASSE_PRIVATEKEY';
-	
+
 	// changing constants at runtime is necessary for init, therefore save them in cache
 	private static $cache = array ();
-	
+
 	public static function setConfig($constant_key, $value) {
 		global $db;
 		$sql = "update " . TABLE_PLUGIN_CONFIGURATION . " set config_value=? where config_key=?";
 		$db->execute($sql, array (
 				$value,
-				$constant_key 
+				$constant_key
 		));
 		self::$cache [$constant_key] = $value;
 	}
 	public static function getConfig($constant_key) {
 		if (!array_key_exists($constant_key, self::$cache))
 			self::$cache [$constant_key] = constant($constant_key);
-		
+
 		return self::$cache [$constant_key];
 	}
 	public static function getRequestParameter($key) {
 		if ($_POST [$key])
-			return urldecode($_POST [$key]);
+			return rawurldecode($_POST [$key]);
 		else
-			return urldecode($_GET [$key]);
+			return rawurldecode($_GET [$key]);
 	}
-	
+
 	public static function getVersion() {
 		global $db;
 		$rs = $db->execute("select config_value from " . TABLE_CONFIGURATION . " where config_key='_SYSTEM_VERSION'");
@@ -59,6 +59,10 @@ class Komfortkasse_Config {
 			$f = $rs->fields;
 			return $f ['config_value'];
 		}
+	}
+
+	public static function output($s) {
+	    echo $s;
 	}
 }
 ?>

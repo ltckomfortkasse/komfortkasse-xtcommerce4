@@ -1,8 +1,14 @@
 <Files *.php>
-Order Deny,Allow
-Deny from all
+	Order Deny,Allow
+	Deny from all
+	<IfModule mod_authz_core.c>
+		Require all denied
+	</IfModule>
 </Files>
 <Files index.php>
-Order Deny,Allow
-Allow from all
+	Order Deny,Allow
+	Allow from all
+	<IfModule mod_authz_core.c>
+		Require all granted
+	</IfModule>
 </Files>
