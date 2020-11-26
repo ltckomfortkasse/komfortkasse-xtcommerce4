@@ -7,7 +7,7 @@
  * status: data type according to the shop system
  * delivery_ and billing_: _firstname, _lastname, _company, _street, _postcode, _city, _countrycode
  * products: an Array of item numbers
- * @version 1.10.1-xtc4/5/6
+ * @version 1.10.2-xtc4/5/6
  */
 class Komfortkasse_Order
 {
@@ -122,6 +122,7 @@ class Komfortkasse_Order
         $ret ['delivery_firstname'] = $order->order_data ['delivery_firstname'];
         $ret ['delivery_lastname'] = $order->order_data ['delivery_lastname'];
         $ret ['delivery_company'] = trim($order->order_data ['delivery_company'] . ' ' . $order->order_data ['delivery_company_2'] . ' ' . $order->order_data ['delivery_company_3']);
+        $ret ['delivery_street'] = trim($order->order_data ['delivery_street_address'] . ' ' . $order->order_data ['delivery_address_addition']);
         $ret ['delivery_postcode'] = $order->order_data ['delivery_postcode'];
         $ret ['delivery_city'] = $order->order_data ['delivery_city'];
         $ret ['delivery_countrycode'] = $order->order_data ['delivery_country_code'];
@@ -129,6 +130,7 @@ class Komfortkasse_Order
         $ret ['billing_firstname'] = $order->order_data ['billing_firstname'];
         $ret ['billing_lastname'] = $order->order_data ['billing_lastname'];
         $ret ['billing_company'] = trim($order->order_data ['billing_company'] . ' ' . $order->order_data ['billing_company_2'] . ' ' . $order->order_data ['billing_company_3']);
+        $ret ['billing_street'] = trim($order->order_data ['billing_street_address'] . ' ' . $order->order_data ['billing_address_addition']);
         $ret ['billing_postcode'] = $order->order_data ['billing_postcode'];
         $ret ['billing_city'] = $order->order_data ['billing_city'];
         $ret ['billing_countrycode'] = $order->order_data ['billing_country_code'];
