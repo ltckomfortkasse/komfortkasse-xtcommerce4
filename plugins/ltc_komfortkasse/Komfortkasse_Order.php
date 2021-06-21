@@ -7,7 +7,7 @@
  * status: data type according to the shop system
  * delivery_ and billing_: _firstname, _lastname, _company, _street, _postcode, _city, _countrycode
  * products: an Array of item numbers
- * @version 1.10.2-xtc4/5/6
+ * @version 1.10.3-xtc4/5/6
  */
 class Komfortkasse_Order
 {
@@ -119,29 +119,29 @@ class Komfortkasse_Order
         $ret ['currency_code'] = $order->order_data ['currency_code'];
         $ret ['exchange_rate'] = $order->order_data ['currency_value'];
         $ret ['language_code'] = $order->order_data ['language_code'] . '-' . $order->order_data ['billing_country_code'];
-        $ret ['delivery_firstname'] = $order->order_data ['delivery_firstname'];
-        $ret ['delivery_lastname'] = $order->order_data ['delivery_lastname'];
-        $ret ['delivery_company'] = trim($order->order_data ['delivery_company'] . ' ' . $order->order_data ['delivery_company_2'] . ' ' . $order->order_data ['delivery_company_3']);
-        $ret ['delivery_street'] = trim($order->order_data ['delivery_street_address'] . ' ' . $order->order_data ['delivery_address_addition']);
+        $ret ['delivery_firstname'] = html_entity_decode($order->order_data ['delivery_firstname']);
+        $ret ['delivery_lastname'] = html_entity_decode($order->order_data ['delivery_lastname']);
+        $ret ['delivery_company'] = html_entity_decode(trim($order->order_data ['delivery_company'] . ' ' . $order->order_data ['delivery_company_2'] . ' ' . $order->order_data ['delivery_company_3']));
+        $ret ['delivery_street'] = html_entity_decode(trim($order->order_data ['delivery_street_address'] . ' ' . $order->order_data ['delivery_address_addition']));
         $ret ['delivery_postcode'] = $order->order_data ['delivery_postcode'];
-        $ret ['delivery_city'] = $order->order_data ['delivery_city'];
+        $ret ['delivery_city'] = html_entity_decode($order->order_data ['delivery_city']);
         $ret ['delivery_countrycode'] = $order->order_data ['delivery_country_code'];
-        $ret ['delivery_phone'] = $order->order_data ['delivery_phone'];
-        $ret ['billing_firstname'] = $order->order_data ['billing_firstname'];
-        $ret ['billing_lastname'] = $order->order_data ['billing_lastname'];
-        $ret ['billing_company'] = trim($order->order_data ['billing_company'] . ' ' . $order->order_data ['billing_company_2'] . ' ' . $order->order_data ['billing_company_3']);
-        $ret ['billing_street'] = trim($order->order_data ['billing_street_address'] . ' ' . $order->order_data ['billing_address_addition']);
+        $ret ['delivery_phone'] = html_entity_decode($order->order_data ['delivery_phone']);
+        $ret ['billing_firstname'] = html_entity_decode($order->order_data ['billing_firstname']);
+        $ret ['billing_lastname'] = html_entity_decode($order->order_data ['billing_lastname']);
+        $ret ['billing_company'] = html_entity_decode(trim($order->order_data ['billing_company'] . ' ' . $order->order_data ['billing_company_2'] . ' ' . $order->order_data ['billing_company_3']));
+        $ret ['billing_street'] = html_entity_decode(trim($order->order_data ['billing_street_address'] . ' ' . $order->order_data ['billing_address_addition']));
         $ret ['billing_postcode'] = $order->order_data ['billing_postcode'];
-        $ret ['billing_city'] = $order->order_data ['billing_city'];
+        $ret ['billing_city'] = html_entity_decode($order->order_data ['billing_city']);
         $ret ['billing_countrycode'] = $order->order_data ['billing_country_code'];
-        $ret ['billing_phone'] = $order->order_data ['billing_phone'];
+        $ret ['billing_phone'] = html_entity_decode($order->order_data ['billing_phone']);
 
         $order_products = $order->order_products;
         foreach ($order_products as $product) {
             if ($product ['products_model']) {
-                $ret ['products'] [] = $product ['products_model'];
+                $ret ['products'] [] = html_entity_decode($product ['products_model']);
             } else {
-                $ret ['products'] [] = $product ['products_name'];
+                $ret ['products'] [] = html_entity_decode($product ['products_name']);
             }
         }
 
