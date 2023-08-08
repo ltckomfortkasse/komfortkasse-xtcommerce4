@@ -8,9 +8,8 @@ require_once 'Komfortkasse_Order.php';
  */
 class Komfortkasse
 {
-    const PLUGIN_VER = '1.10.3';
+    const PLUGIN_VER = '1.10.5';
     const MAXLEN_SSL = 117;
-
 
     /**
      * Read orders.
@@ -20,11 +19,9 @@ class Komfortkasse
     public static function readorders()
     {
         return Komfortkasse::read(false);
-
     }
 
- // end readorders()
-
+    // end readorders()
 
     /**
      * Read refunds.
@@ -34,11 +31,9 @@ class Komfortkasse
     public static function readrefunds()
     {
         return Komfortkasse::read(true);
-
     }
 
- // end readrefunds()
-
+    // end readrefunds()
 
     /**
      * Read orders/refunds.
@@ -49,7 +44,6 @@ class Komfortkasse
      */
     public static function read($refunds)
     {
-
         if (!Komfortkasse_Config::getConfig(Komfortkasse_Config::activate_export)) {
             return;
         }
@@ -85,8 +79,8 @@ class Komfortkasse
                     $order = Komfortkasse_Order::getRefund($id);
                 } else {
                     $order = Komfortkasse_Order::getOrder($id);
-                    if ($order['payment_method'])
-                        $order['type'] = self::getOrderType($order);
+                    if ($order ['payment_method'])
+                        $order ['type'] = self::getOrderType($order);
                 }
 
                 if (!$order) {
@@ -104,11 +98,10 @@ class Komfortkasse
                 return Komfortkasse_Config::output($cry);
             }
         }
-     // end if
+        // end if
     }
 
- // end read()
-
+    // end read()
 
     /**
      * Test.
@@ -122,11 +115,9 @@ class Komfortkasse
         $enc = Komfortkasse::kkencrypt($dec);
 
         return Komfortkasse_Config::output($enc);
-
     }
 
- // end test()
-
+    // end test()
 
     /**
      * Init.
@@ -142,19 +133,20 @@ class Komfortkasse
         $ret .= 'accesskey:';
 
         $subshops = str_replace(' ', '', Komfortkasse_Config::getRequestParameter('s'));
-        $orders_store_id = $subshops ? array() : null;
+        $orders_store_id = $subshops ? array () : null;
         if ($subshops) {
-            foreach (explode (',', $subshops) as $subshop) {
-                $order_store_id = array();
-                $order_store_id['store_id'] = $subshop;
-                $orders_store_id[] = $order_store_id;
+            foreach (explode(',', $subshops) as $subshop) {
+                $order_store_id = array ();
+                $order_store_id ['store_id'] = $subshop;
+                $orders_store_id [] = $order_store_id;
             }
         }
 
         // Set access code.
         $hashed = call_user_func('md5', Komfortkasse_Config::getRequestParameter('accesscode'));
         if ($hashed != Komfortkasse_Config::getRequestParameter('accesscode_hash')) {
-            $ret .= ('MD5 Hashes do not match! Shop ' . $hashed . ' given ' . Komfortkasse_Config::getRequestParameter('accesscode_hash'));
+            $ret .= ('MD5 Hashes do not match! Shop ' . $hashed . ' given ' . Komfortkasse_Config::getRequestParameter(
+                    'accesscode_hash'));
             return Komfortkasse_Config::output($ret);
         }
 
@@ -184,8 +176,11 @@ class Komfortkasse
         if ($subshops) {
             foreach ($orders_store_id as $order_store_id) {
                 $apikey = Komfortkasse_Config::getRequestParameter('apikey');
-                if (Komfortkasse_Config::getConfig(Komfortkasse_Config::apikey, $order_store_id) != '' && Komfortkasse_Config::getConfig(Komfortkasse_Config::apikey, $order_store_id) !== 'undefined' && Komfortkasse_Config::getConfig(Komfortkasse_Config::apikey, $order_store_id) !== $apikey) {
-                    $ret .= ('API Key already set for subshop ' . $order_store_id ['store_id'] . '! Shop ' . Komfortkasse_Config::getConfig(Komfortkasse_Config::apikey, $order_store_id) . ', given ' . $apikey);
+                if (Komfortkasse_Config::getConfig(Komfortkasse_Config::apikey, $order_store_id) != '' && Komfortkasse_Config::getConfig(
+                        Komfortkasse_Config::apikey, $order_store_id) !== 'undefined' && Komfortkasse_Config::getConfig(
+                        Komfortkasse_Config::apikey, $order_store_id) !== $apikey) {
+                    $ret .= ('API Key already set for subshop ' . $order_store_id ['store_id'] . '! Shop ' . Komfortkasse_Config::getConfig(
+                            Komfortkasse_Config::apikey, $order_store_id) . ', given ' . $apikey);
                     return Komfortkasse_Config::output($ret);
                 }
             }
@@ -193,7 +188,9 @@ class Komfortkasse
                 Komfortkasse_Config::setConfig(Komfortkasse_Config::apikey, $apikey, $order_store_id);
         } else {
             $apikey = Komfortkasse_Config::getRequestParameter('apikey');
-            if (Komfortkasse_Config::getConfig(Komfortkasse_Config::apikey) != '' && Komfortkasse_Config::getConfig(Komfortkasse_Config::apikey) !== 'undefined' && Komfortkasse_Config::getConfig(Komfortkasse_Config::apikey) !== $apikey) {
+            if (Komfortkasse_Config::getConfig(Komfortkasse_Config::apikey) != '' && Komfortkasse_Config::getConfig(
+                    Komfortkasse_Config::apikey) !== 'undefined' && Komfortkasse_Config::getConfig(
+                    Komfortkasse_Config::apikey) !== $apikey) {
                 $ret .= ('API Key already set! Shop ' . Komfortkasse_Config::getConfig(Komfortkasse_Config::apikey) . ', given ' . $apikey);
                 return Komfortkasse_Config::output($ret);
             }
@@ -214,7 +211,7 @@ class Komfortkasse
             if ($subshops) {
                 foreach ($orders_store_id as $order_store_id)
                     Komfortkasse_Config::setConfig(Komfortkasse_Config::privatekey, $kpriv, $order_store_id);
-                    Komfortkasse_Config::setConfig(Komfortkasse_Config::publickey, $kpub, $order_store_id);
+                Komfortkasse_Config::setConfig(Komfortkasse_Config::publickey, $kpub, $order_store_id);
             } else {
                 Komfortkasse_Config::setConfig(Komfortkasse_Config::privatekey, $kpriv);
                 Komfortkasse_Config::setConfig(Komfortkasse_Config::publickey, $kpub);
@@ -257,7 +254,9 @@ class Komfortkasse
         $ret .= ($encryptionstring);
 
         $ret .= ('decryptiontest:');
-        $decrypt = Komfortkasse::kkdecrypt($crypttest, Komfortkasse_Config::getConfig(Komfortkasse_Config::encryption, Komfortkasse::getStoreIdOrderFromRequest()));
+        $decrypt = Komfortkasse::kkdecrypt($crypttest,
+                Komfortkasse_Config::getConfig(Komfortkasse_Config::encryption,
+                        Komfortkasse::getStoreIdOrderFromRequest()));
         if ($decrypt === 'Can you hear me?') {
             $ret .= ('ok');
         } else {
@@ -265,7 +264,9 @@ class Komfortkasse
         }
 
         $ret .= ('|encryptiontest:');
-        $encrypt = Komfortkasse::kkencrypt('Yes, I see you!', Komfortkasse_Config::getConfig(Komfortkasse_Config::encryption, Komfortkasse::getStoreIdOrderFromRequest()));
+        $encrypt = Komfortkasse::kkencrypt('Yes, I see you!',
+                Komfortkasse_Config::getConfig(Komfortkasse_Config::encryption,
+                        Komfortkasse::getStoreIdOrderFromRequest()));
         if ($encrypt !== false) {
             $ret .= ($encrypt);
         } else {
@@ -275,8 +276,7 @@ class Komfortkasse
         return Komfortkasse_Config::output($ret);
     }
 
- // end init()
-
+    // end init()
 
     /**
      * Update orders.
@@ -286,11 +286,9 @@ class Komfortkasse
     public static function updateorders()
     {
         return Komfortkasse::update(false);
-
     }
 
- // end updateorders()
-
+    // end updateorders()
 
     /**
      * Update refunds.
@@ -300,11 +298,9 @@ class Komfortkasse
     public static function updaterefunds()
     {
         return Komfortkasse::update(true);
-
     }
 
- // end updaterefunds()
-
+    // end updaterefunds()
 
     /**
      * Update refunds or order.
@@ -373,15 +369,20 @@ class Komfortkasse
                 }
 
                 // only update if order status update is necessary (dont update if order has been updated manually)
-                if ($order['status'] == $newstatus) {
+                if ($order ['status'] == $newstatus) {
                     $o = $o . Komfortkasse::kk_csv($id);
                     continue;
                 }
 
                 // dont update if order is no longer relevant (will be marked as DISAPPEARED later on)
-                if (in_array($order ['number'], $openids) === false) {
-                    continue;
+                $updateOk = in_array($order ['number'], $openids);
+                if ($updateOk === false) {
+                    // setting from CANCELLED to PAID is allowed if not open
+                    if ($status == 'PAID' && $order ['status'] == Komfortkasse::getNewStatus('CANCELLED', $order))
+                        $updateOk = true;
                 }
+                if ($updateOk === false)
+                    continue;
 
                 Komfortkasse_Order::updateOrder($order, $newstatus, $callbackid);
             }
@@ -395,29 +396,27 @@ class Komfortkasse
         } else {
             return Komfortkasse_Config::output($cry);
         }
-
     }
 
- // end update()
-
+    // end update()
     private static function isOpen($order)
     {
         $status = '';
         switch ($order ['type']) {
-            case 'PREPAYMENT' :
+            case 'PREPAYMENT':
                 $status = Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open, $order);
                 break;
-            case 'INVOICE' :
+            case 'INVOICE':
                 $status = Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open_invoice, $order);
                 break;
-            case 'COD' :
+            case 'COD':
                 $status = Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open_cod, $order);
                 break;
             default:
                 return false;
         }
 
-        return in_array($order['status'], explode(',', trim(str_replace('"', '', $status))));
+        return in_array($order ['status'], explode(',', trim(str_replace('"', '', $status))));
     }
 
     /**
@@ -429,15 +428,16 @@ class Komfortkasse
      */
     public static function notifyorder($id)
     {
-        Komfortkasse_Config::log('notifyorder BEGIN');
+        Komfortkasse_Config::log('notifyorder BEGIN ' . $id);
         if (!Komfortkasse_Config::getConfig(Komfortkasse_Config::activate_export)) {
             Komfortkasse_Config::log('notifyorder END: global config not active');
             return;
         }
 
         $order = Komfortkasse_Order::getOrder($id);
-        $order['type'] = self::getOrderType($order);
-
+        $order ['type'] = self::getOrderType($order);
+        if (!$order ['type'])
+            return;
         if (!Komfortkasse_Config::getConfig(Komfortkasse_Config::activate_export, $order)) {
             Komfortkasse_Config::log('notifyorder END: order config not active');
             return;
@@ -447,30 +447,62 @@ class Komfortkasse
             Komfortkasse_Config::log('notifyorder END: order not open (1)');
             return;
         }
-        if (method_exists ('Komfortkasse_Order', 'isOpen') && !Komfortkasse_Order::isOpen($order)) {
+        if (method_exists('Komfortkasse_Order', 'isOpen') && !Komfortkasse_Order::isOpen($order)) {
             Komfortkasse_Config::log('notifyorder END: order not open (2)');
             return;
         }
 
-        $queryRaw = http_build_query($order);
-
-        $queryEnc = Komfortkasse::kkencrypt($queryRaw);
-
-        $query = http_build_query(array ('q' => $queryEnc,'hash' => Komfortkasse_Config::getConfig(Komfortkasse_Config::accesscode, $order),'key' => Komfortkasse_Config::getConfig(Komfortkasse_Config::apikey, $order)
-        ));
-
-        $contextData = array ('method' => 'POST','timeout' => 2,'header' => "Connection: close\r\n" . 'Content-Length: ' . strlen($query) . "\r\n",'content' => $query
-        );
-
-        $context = stream_context_create(array ('http' => $contextData
-        ));
-
-        // Development: http://localhost:8080/kkos01/api...
-        $result = @file_get_contents('http://api.komfortkasse.eu/api/shop/neworder.jsf', false, $context);
+        $ret = Komfortkasse::notifyorderInternal($order, 'neworder');
+        Komfortkasse_Config::log('notifyorder END: ' . $ret);
     }
 
- // end notifyorder()
+    private static function notifyorderInternal($order, $path)
+    {
+        $queryRaw = http_build_query($order);
+        $queryEnc = Komfortkasse::kkencrypt($queryRaw);
+        $query = http_build_query(
+                array ('q' => $queryEnc,
+                        'hash' => Komfortkasse_Config::getConfig(Komfortkasse_Config::accesscode, $order),
+                        'key' => Komfortkasse_Config::getConfig(Komfortkasse_Config::apikey, $order)
+                ));
+        $url = 'http://api.komfortkasse.eu/api/shop/' . $path . '.jsf';
+        $timeout = 2;
 
+        if (extension_loaded('curl')) {
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_NOSIGNAL, 1);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+            curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
+            $result = @curl_exec($ch);
+            if ($result === false)
+                $result = curl_error($ch);
+            @curl_close($ch);
+
+        } else {
+
+            $contextData = array ('method' => 'POST','timeout' => $timeout,
+                    'header' => "Connection: close\r\n" . 'Content-Length: ' . strlen($query) . "\r\n",
+                    'content' => $query
+            );
+
+            $context = stream_context_create(array ('http' => $contextData
+            ));
+
+            $result = @file_get_contents($url, false, $context);
+            if ($result === false)
+                $result = error_get_last();
+        }
+
+        return $result;
+    }
+
+    // end notifyorder()
 
     /**
      * Info.
@@ -495,11 +527,9 @@ class Komfortkasse
         } else {
             return Komfortkasse_Config::output($cry);
         }
-
     }
 
- // end info()
-
+    // end info()
 
     /**
      * Retrieve new status.
@@ -510,41 +540,37 @@ class Komfortkasse
      */
     protected static function getNewStatus($status, $order)
     {
-
         $orderType = self::getOrderType($order);
 
         switch ($orderType) {
-            case 'PREPAYMENT' :
+            case 'PREPAYMENT':
                 switch ($status) {
-                    case 'PAID' :
+                    case 'PAID':
                         return Komfortkasse_Config::getConfig(Komfortkasse_Config::status_paid, $order);
-                    case 'CANCELLED' :
+                    case 'CANCELLED':
                         return Komfortkasse_Config::getConfig(Komfortkasse_Config::status_cancelled, $order);
                 }
                 return null;
-            case 'INVOICE' :
+            case 'INVOICE':
                 switch ($status) {
-                    case 'PAID' :
+                    case 'PAID':
                         return Komfortkasse_Config::getConfig(Komfortkasse_Config::status_paid_invoice, $order);
-                    case 'CANCELLED' :
+                    case 'CANCELLED':
                         return Komfortkasse_Config::getConfig(Komfortkasse_Config::status_cancelled_invoice, $order);
                 }
                 return null;
-            case 'COD' :
+            case 'COD':
                 switch ($status) {
-                    case 'PAID' :
+                    case 'PAID':
                         return Komfortkasse_Config::getConfig(Komfortkasse_Config::status_paid_cod, $order);
-                    case 'CANCELLED' :
+                    case 'CANCELLED':
                         return Komfortkasse_Config::getConfig(Komfortkasse_Config::status_cancelled_cod, $order);
                 }
                 return null;
         }
-
     }
 
-
-        // end getNewStatus()
-
+    // end getNewStatus()
 
     /**
      * Check.
@@ -574,11 +600,9 @@ class Komfortkasse
                 return true;
             }
         }
-
     }
 
- // end check()
-
+    // end check()
 
     /**
      * Encrypt.
@@ -593,26 +617,26 @@ class Komfortkasse
     protected static function kkencrypt($s, $encryption = null, $keystring = null)
     {
         if (!$encryption) {
-            $encryption = Komfortkasse_Config::getConfig(Komfortkasse_Config::encryption, Komfortkasse::getStoreIdOrderFromRequest());
+            $encryption = Komfortkasse_Config::getConfig(Komfortkasse_Config::encryption,
+                    Komfortkasse::getStoreIdOrderFromRequest());
         }
         if (!$keystring) {
-            $keystring = Komfortkasse_Config::getConfig(Komfortkasse_Config::publickey, Komfortkasse::getStoreIdOrderFromRequest());
+            $keystring = Komfortkasse_Config::getConfig(Komfortkasse_Config::publickey,
+                    Komfortkasse::getStoreIdOrderFromRequest());
         }
         if ($s === '') {
             return '';
         }
 
         switch ($encryption) {
-            case 'openssl' :
+            case 'openssl':
                 return Komfortkasse::kkencrypt_openssl($s, $keystring);
-            case 'base64' :
+            case 'base64':
                 return Komfortkasse::kkencrypt_base64($s);
         }
-
     }
 
- // end kkencrypt()
-
+    // end kkencrypt()
 
     /**
      * Decrypt.
@@ -627,26 +651,26 @@ class Komfortkasse
     public static function kkdecrypt($s, $encryption = null, $keystring = null)
     {
         if (!$encryption) {
-            $encryption = Komfortkasse_Config::getConfig(Komfortkasse_Config::encryption, Komfortkasse::getStoreIdOrderFromRequest());
+            $encryption = Komfortkasse_Config::getConfig(Komfortkasse_Config::encryption,
+                    Komfortkasse::getStoreIdOrderFromRequest());
         }
         if (!$keystring) {
-            $keystring = Komfortkasse_Config::getConfig(Komfortkasse_Config::privatekey, Komfortkasse::getStoreIdOrderFromRequest());
+            $keystring = Komfortkasse_Config::getConfig(Komfortkasse_Config::privatekey,
+                    Komfortkasse::getStoreIdOrderFromRequest());
         }
         if ($s === '') {
             return '';
         }
 
         switch ($encryption) {
-            case 'openssl' :
+            case 'openssl':
                 return Komfortkasse::kkdecrypt_openssl($s, $keystring);
-            case 'base64' :
+            case 'base64':
                 return Komfortkasse::kkdecrypt_base64($s);
         }
-
     }
 
- // end kkdecrypt()
-
+    // end kkdecrypt()
 
     /**
      * Show encryption/decryption error.
@@ -658,18 +682,17 @@ class Komfortkasse
     protected static function kkcrypterror($encryption = null)
     {
         if (!$encryption) {
-            $encryption = Komfortkasse_Config::getConfig(Komfortkasse_Config::encryption, Komfortkasse::getStoreIdOrderFromRequest());
+            $encryption = Komfortkasse_Config::getConfig(Komfortkasse_Config::encryption,
+                    Komfortkasse::getStoreIdOrderFromRequest());
         }
 
         switch ($encryption) {
-            case 'openssl' :
+            case 'openssl':
                 return str_replace(':', ';', openssl_error_string());
         }
-
     }
 
- // end kkcrypterror()
-
+    // end kkcrypterror()
 
     /**
      * Encrypt with base 64.
@@ -681,11 +704,9 @@ class Komfortkasse
     protected static function kkencrypt_base64($s)
     {
         return Komfortkasse::mybase64_encode($s);
-
     }
 
- // end kkencrypt_base64()
-
+    // end kkencrypt_base64()
 
     /**
      * Decrypt with base 64.
@@ -697,11 +718,9 @@ class Komfortkasse
     protected static function kkdecrypt_base64($s)
     {
         return Komfortkasse::mybase64_decode($s);
-
     }
 
- // end kkdecrypt_base64()
-
+    // end kkdecrypt_base64()
 
     /**
      * Encrypt with open ssl.
@@ -729,15 +748,13 @@ class Komfortkasse
             }
 
             $ret = $ret . "\n" . Komfortkasse::mybase64_encode($encrypted);
-        } while ($s);
+        } while ( $s );
 
         openssl_free_key($key);
         return $ret;
-
     }
 
- // end kkencrypt_openssl()
-
+    // end kkencrypt_openssl()
 
     /**
      * Decrypt with open ssl.
@@ -770,11 +787,9 @@ class Komfortkasse
 
         openssl_free_key($key);
         return $ret;
-
     }
 
- // end kkdecrypt_openssl()
-
+    // end kkdecrypt_openssl()
 
     /**
      * Output CSV.
@@ -786,11 +801,9 @@ class Komfortkasse
     protected static function kk_csv($s)
     {
         return '"' . str_replace('"', '', str_replace(';', ',', utf8_encode($s))) . '";';
-
     }
 
- // end kk_csv()
-
+    // end kk_csv()
 
     /**
      * Count
@@ -802,40 +815,45 @@ class Komfortkasse
     protected static function mycount($array)
     {
         return count($array);
-
     }
 
- // end mycount()
+    // end mycount()
     protected static function mybase64_decode($s)
     {
         return base64_decode($s);
-
     }
 
- // end mybase64_decode()
+    // end mybase64_decode()
     protected static function mybase64_encode($s)
     {
         return base64_encode($s);
-
     }
 
- // end mybase64_encode()
-
-    public static function getOrderType($order) {
-        $payment_method = $order['payment_method'];
-        $paycodes = preg_split('/,/', trim(str_replace('"','',Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods, $order))));
+    // end mybase64_encode()
+    public static function getOrderType($order)
+    {
+        $payment_method = $order ['payment_method'];
+        $paycodes = preg_split('/,/',
+                trim(str_replace('"', '', Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods, $order))));
         if (in_array($payment_method, $paycodes))
             return 'PREPAYMENT';
-        $paycodes = preg_split('/,/', trim(str_replace('"','',Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods_invoice, $order))));
+        $paycodes = preg_split('/,/',
+                trim(
+                        str_replace('"', '',
+                                Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods_invoice, $order))));
         if (in_array($payment_method, $paycodes))
             return 'INVOICE';
-        $paycodes = preg_split('/,/', trim(str_replace('"','',Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods_cod, $order))));
+        $paycodes = preg_split('/,/',
+                trim(
+                        str_replace('"', '',
+                                Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods_cod, $order))));
         if (in_array($payment_method, $paycodes))
             return 'COD';
         return '';
     }
 
-    public static function readinvoicepdf() {
+    public static function readinvoicepdf()
+    {
         Komfortkasse_Order::getInvoicePdfPrepare();
 
         if (!Komfortkasse_Config::getConfig(Komfortkasse_Config::activate_export)) {
@@ -852,16 +870,41 @@ class Komfortkasse
         $orderNumber = Komfortkasse::kkdecrypt($orderNumber);
 
         return Komfortkasse_Order::getInvoicePdf($invoiceNumber, $orderNumber);
-
     }
 
-    private static function getStoreIdOrderFromRequest() {
+    public static function readconfig()
+    {
+        $key = Komfortkasse_Config::getRequestParameter('confkey');
+        if (strpos($key, 'ACCESSCODE') !== false)
+            return null;
+        if (strpos($key, 'KEY') !== false)
+            return null;
+
+        $storeid = Komfortkasse_Config::getRequestParameter('storeid');
+
+        $order = null;
+        if ($storeid)
+            $order ['store_id'] = $storeid;
+
+        Komfortkasse_Config::output(Komfortkasse_Config::getConfig($key, $order));
+    }
+
+    public static function apitest()
+    {
+        $order = Komfortkasse::getStoreIdOrderFromRequest();
+        $order['order_id'] = 'apitest';
+        $ret = Komfortkasse::notifyorderInternal($order, 'test');
+        Komfortkasse_Config::output($ret);
+    }
+
+    private static function getStoreIdOrderFromRequest()
+    {
         $subshops = str_replace(' ', '', Komfortkasse_Config::getRequestParameter('s'));
         if (!$subshops)
             return null;
         $subshop_array = explode(',', $subshops);
-        $order_store_id = array();
-        $order_store_id['store_id'] = $subshop_array[0];
+        $order_store_id = array ();
+        $order_store_id ['store_id'] = $subshop_array [0];
         return $order_store_id;
     }
 }

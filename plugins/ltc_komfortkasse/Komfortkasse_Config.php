@@ -4,7 +4,7 @@
  * Komfortkasse
  * Config Class
  *
- * @version 1.10.1-xtc4/5/6
+ * @version 1.10.4-xtc4/5/6
  */
 class Komfortkasse_Config
 {
@@ -92,6 +92,8 @@ class Komfortkasse_Config
 
     public static function getVersion()
     {
+        if (_SYSTEM_VERSION)
+            return _SYSTEM_VERSION;
         global $db;
         $rs = $db->execute("select config_value from " . TABLE_CONFIGURATION . " where config_key='_SYSTEM_VERSION'");
         if (!$rs->EOF) {
@@ -110,7 +112,8 @@ class Komfortkasse_Config
 
     public static function log($s)
     {
-        // not implemented
+        global $logHandler;
+        $logHandler->_addLog('success', 'ltc_komfortkasse', '', $s);
     }
 }
 ?>

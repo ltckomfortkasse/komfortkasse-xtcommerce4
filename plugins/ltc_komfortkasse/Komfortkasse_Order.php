@@ -7,7 +7,7 @@
  * status: data type according to the shop system
  * delivery_ and billing_: _firstname, _lastname, _company, _street, _postcode, _city, _countrycode
  * products: an Array of item numbers
- * @version 1.10.3-xtc4/5/6
+ * @version 1.10.5-xtc4/5/6
  */
 class Komfortkasse_Order
 {
@@ -108,8 +108,10 @@ class Komfortkasse_Order
         }
 
         $ret = array ();
+        $ret ['store_id'] = $order->order_data ['shop_id'];
         $ret ['number'] = $order->order_data ['orders_id'];
-        $ret ['status'] = $order->order_data ['orders_status'];
+        $ret ['status'] = $order->order_data ['orders_status_id'];
+        $ret ['status_name'] = $order->order_data ['orders_status'];
         $ret ['date'] = $order->order_data ['date_purchased'];
         $ret ['email'] = $order->order_data ['customers_email_address'];
         $ret ['customer_number'] = $order->order_data [''];
