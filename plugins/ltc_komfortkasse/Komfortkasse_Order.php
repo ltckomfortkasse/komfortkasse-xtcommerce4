@@ -7,7 +7,7 @@
  * status: data type according to the shop system
  * delivery_ and billing_: _firstname, _lastname, _company, _street, _postcode, _city, _countrycode
  * products: an Array of item numbers
- * @version 1.10.5-xtc4/5/6
+ * @version 1.10.6-xtc4/5/6
  */
 class Komfortkasse_Order
 {
@@ -195,7 +195,7 @@ class Komfortkasse_Order
                     if (!$invoice->RecordCount())
                         return;
                     $id = $invoice->fields ['invoice_id'];
-                    if (!id)
+                    if (!$id)
                         return;
 
                     $xti = new xt_orders_invoices();
