@@ -3,7 +3,7 @@
  * Komfortkasse
  * routing
  *
- * @version 1.1.7-xtc4
+ * @version 1.10.7-xtc4/5/6
  */
 
 ini_set('default_charset', 'utf-8');
@@ -30,6 +30,22 @@ require_once ($basepath[0].'xtCore/main.php');
 include_once 'Komfortkasse.php';
 
 $action = Komfortkasse_Config::getRequestParameter('action');
+
+// Only the actions Komfortkasse calls; never dispatch to arbitrary public methods.
+$allowedActions = array (
+	'init',
+	'test',
+	'readorders',
+	'updateorders',
+	'info',
+	'readinvoicepdf',
+	'readconfig',
+	'apitest'
+);
+if (!is_string($action) || !in_array($action, $allowedActions, true)) {
+	header('HTTP/1.1 400 Bad Request');
+	exit();
+}
 
 $kk = new Komfortkasse();
 $kk->$action();

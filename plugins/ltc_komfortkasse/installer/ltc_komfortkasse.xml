@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xtcommerceplugin>
   <title>Komfortkasse</title>
-  <version>1.10.6</version>
+  <version>1.10.7</version>
   <minimumupdateversion>1.0.6</minimumupdateversion>
   <code>ltc_komfortkasse</code>
-  <url>http://komfortkasse.eu</url>
+  <url>https://komfortkasse.eu/shopsysteme/xtcommerce/</url>
   <icon>komfortkasse_eu.png</icon>
   <description>Automatische Zuordnung von Zahlungen</description>
   <type>payment</type>

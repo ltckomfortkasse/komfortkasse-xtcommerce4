@@ -4,7 +4,7 @@
  * Komfortkasse
  * Config Class
  *
- * @version 1.10.4-xtc4/5/6
+ * @version 1.10.7-xtc4/5/6
  */
 class Komfortkasse_Config
 {
@@ -82,10 +82,12 @@ class Komfortkasse_Config
 
     public static function getRequestParameter($key)
     {
-        if ($_POST [$key])
-            return rawurldecode($_POST [$key]);
-        else
-            return rawurldecode($_GET [$key]);
+        // POST wins if set and non-empty (as before); missing keys and arrays give ''
+        // instead of PHP 8 warnings / TypeErrors
+        $value = !empty($_POST [$key]) ? $_POST [$key] : (isset($_GET [$key]) ? $_GET [$key] : '');
+        if (!is_string($value))
+            return '';
+        return rawurldecode($value);
 
     }
 

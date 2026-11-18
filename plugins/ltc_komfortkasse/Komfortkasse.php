@@ -8,7 +8,7 @@ require_once 'Komfortkasse_Order.php';
  */
 class Komfortkasse
 {
-    const PLUGIN_VER = '1.10.6';
+    const PLUGIN_VER = '1.10.7';
     const MAXLEN_SSL = 117;
 
     /**
@@ -79,7 +79,7 @@ class Komfortkasse
                     $order = Komfortkasse_Order::getRefund($id);
                 } else {
                     $order = Komfortkasse_Order::getOrder($id);
-                    if ($order ['payment_method'])
+                    if ($order && !empty($order ['payment_method']))
                         $order ['type'] = self::getOrderType($order);
                 }
 
@@ -110,7 +110,11 @@ class Komfortkasse
      */
     public static function test()
     {
-        $dec = Komfortkasse::kkdecrypt(Komfortkasse_Config::getRequestParameter('test'));
+        if (Komfortkasse::check() === false) {
+            return;
+        }
+
+        $dec =Komfortkasse::kkdecrypt(Komfortkasse_Config::getRequestParameter('test'));
 
         $enc = Komfortkasse::kkencrypt($dec);
 
@@ -355,7 +359,7 @@ class Komfortkasse
             } else {
 
                 $order = Komfortkasse_Order::getOrder($id);
-                if ($id != $order ['number']) {
+                if (!$order || $id != $order ['number']) {
                     continue;
                 }
 
@@ -435,6 +439,10 @@ class Komfortkasse
         }
 
         $order = Komfortkasse_Order::getOrder($id);
+        if (!$order) {
+            Komfortkasse_Config::log('notifyorder END: order not found');
+            return;
+        }
         $order ['type'] = self::getOrderType($order);
         if (!$order ['type'])
             return;
@@ -465,14 +473,22 @@ class Komfortkasse
                         'hash' => Komfortkasse_Config::getConfig(Komfortkasse_Config::accesscode, $order),
                         'key' => Komfortkasse_Config::getConfig(Komfortkasse_Config::apikey, $order)
                 ));
-        $url = 'http://api.komfortkasse.eu/api/shop/' . $path . '.jsf';
+        // API key and access code hash are sent with the request, so only ever use TLS
+        // and never fall back to plain HTTP. If the push fails, Komfortkasse still picks
+        // the order up on its regular sync.
+        $url = 'https://ssl.komfortkasse.eu/api/shop/' . $path . '.jsf';
         $timeout = 2;
+        $result = false;
+        $curlError = null;
 
         if (extension_loaded('curl')) {
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            // No redirects: a 307/308 would resend the POST body (incl. key) elsewhere.
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_NOSIGNAL, 1);
@@ -480,23 +496,39 @@ class Komfortkasse
             curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
             $result = @curl_exec($ch);
-            if ($result === false)
-                $result = curl_error($ch);
+            if ($result === false) {
+                $curlError = 'curl: ' . curl_error($ch);
+                // On timeout don't retry, so order creation isn't delayed twice.
+                if (curl_errno($ch) == 28)
+                    $result = $curlError;
+            }
             @curl_close($ch);
+        }
 
-        } else {
+        if ($result === false && !in_array('https', stream_get_wrappers())) {
 
-            $contextData = array ('method' => 'POST','timeout' => $timeout,
+            // No openssl extension: skip rather than send the key unencrypted.
+            $result = ($curlError ? $curlError . '; ' : '') . 'https stream wrapper not available';
+        } else if ($result === false) {
+
+            // No curl, or curl failed (e.g. missing CA bundle for curl): try PHP streams,
+            // which use OpenSSL's / the system's CA store. Still TLS with peer verification.
+            $contextData = array ('method' => 'POST','timeout' => $timeout,'follow_location' => 0,
                     'header' => "Connection: close\r\n" . 'Content-Length: ' . strlen($query) . "\r\n",
                     'content' => $query
             );
 
-            $context = stream_context_create(array ('http' => $contextData
+            $sslData = array ('verify_peer' => true,'verify_peer_name' => true,'peer_name' => 'ssl.komfortkasse.eu'
+            );
+
+            $context = stream_context_create(array ('http' => $contextData,'ssl' => $sslData
             ));
 
             $result = @file_get_contents($url, false, $context);
-            if ($result === false)
-                $result = error_get_last();
+            if ($result === false) {
+                $e = error_get_last();
+                $result = ($curlError ? $curlError . '; ' : '') . 'stream: ' . ($e ? $e ['message'] : 'request failed');
+            }
         }
 
         return $result;
@@ -580,7 +612,7 @@ class Komfortkasse
     public static function check()
     {
         $ac = Komfortkasse_Config::getRequestParameter('accesscode');
-        if (!$ac)
+        if (!is_string($ac) || $ac === '')
             return false;
         $md5 = call_user_func('md5', $ac);
 
@@ -589,17 +621,21 @@ class Komfortkasse
             foreach (explode(',', $subshops) as $s) {
                 $order_store_id = array ();
                 $order_store_id ['store_id'] = $s;
-                if ($md5 !== Komfortkasse_Config::getConfig(Komfortkasse_Config::accesscode, $order_store_id))
+                if (!self::hashEquals((string) Komfortkasse_Config::getConfig(Komfortkasse_Config::accesscode, $order_store_id), $md5))
                     return false;
             }
             return true;
         } else {
-            if ($md5 !== Komfortkasse_Config::getConfig(Komfortkasse_Config::accesscode)) {
-                return false;
-            } else {
-                return true;
-            }
+            return self::hashEquals((string) Komfortkasse_Config::getConfig(Komfortkasse_Config::accesscode), $md5);
         }
+    }
+
+    // constant-time comparison where available
+    private static function hashEquals($known, $given)
+    {
+        if (function_exists('hash_equals'))
+            return hash_equals($known, $given);
+        return $known === $given;
     }
 
     // end check()
@@ -800,7 +836,9 @@ class Komfortkasse
      */
     protected static function kk_csv($s)
     {
-        return '"' . str_replace('"', '', str_replace(';', ',', utf8_encode($s))) . '";';
+        // ISO-8859-1 -> UTF-8 as utf8_encode() did (deprecated since PHP 8.2), same output
+        $s = function_exists('mb_convert_encoding') ? mb_convert_encoding((string) $s, 'UTF-8', 'ISO-8859-1') : utf8_encode((string) $s);
+        return '"' . str_replace('"', '', str_replace(';', ',', $s)) . '";';
     }
 
     // end kk_csv()
@@ -875,9 +913,19 @@ class Komfortkasse
     public static function readconfig()
     {
         $key = Komfortkasse_Config::getRequestParameter('confkey');
-        if (strpos($key, 'ACCESSCODE') !== false)
-            return null;
-        if (strpos($key, 'KEY') !== false)
+
+        // Only the plugin's own non-secret settings may be read (no authentication on this
+        // action). getConfig() resolves any PHP constant, so a blacklist would expose e.g.
+        // other constants of the shop configuration.
+        $allowed = array (Komfortkasse_Config::activate_export,Komfortkasse_Config::activate_update,
+                Komfortkasse_Config::payment_methods,Komfortkasse_Config::status_open,Komfortkasse_Config::status_paid,
+                Komfortkasse_Config::status_cancelled,Komfortkasse_Config::payment_methods_invoice,
+                Komfortkasse_Config::status_open_invoice,Komfortkasse_Config::status_paid_invoice,
+                Komfortkasse_Config::status_cancelled_invoice,Komfortkasse_Config::payment_methods_cod,
+                Komfortkasse_Config::status_open_cod,Komfortkasse_Config::status_paid_cod,
+                Komfortkasse_Config::status_cancelled_cod,Komfortkasse_Config::encryption
+        );
+        if (!in_array($key, $allowed, true))
             return null;
 
         $storeid = Komfortkasse_Config::getRequestParameter('storeid');

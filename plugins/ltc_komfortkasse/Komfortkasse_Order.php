@@ -7,11 +7,53 @@
  * status: data type according to the shop system
  * delivery_ and billing_: _firstname, _lastname, _company, _street, _postcode, _city, _countrycode
  * products: an Array of item numbers
- * @version 1.10.6-xtc4/5/6
+ * @version 1.10.7-xtc4/5/6
  */
 class Komfortkasse_Order
 {
 
+    // comma separated value -> trimmed, non-empty parts
+    private static function csvParts($csv)
+    {
+        $parts = array ();
+        foreach (explode(',', str_replace('"', '', (string) $csv)) as $part) {
+            $part = trim($part);
+            if ($part !== '') {
+                $parts [] = $part;
+            }
+        }
+        return $parts;
+    }
+
+    // IDs for an SQL IN clause, cast to int
+    private static function intList($csv)
+    {
+        $ids = array_map('intval', self::csvParts($csv));
+        return empty($ids) ? '0' : implode(',', $ids);
+    }
+
+    // open order IDs of one shop for one payment type: status IDs cast to int, payment codes as bound parameters
+    private static function getOpenIDsFor($statusCsv, $paycodesCsv, $store_id)
+    {
+        global $db;
+        $ret = array ();
+        $paycodes = self::csvParts($paycodesCsv);
+        if (empty($paycodes)) {
+            return $ret;
+        }
+
+        $sql = "select orders_id from " . TABLE_ORDERS . " where orders_status in (" . self::intList($statusCsv) . ") and ( ";
+        $sql .= implode(' or ', array_fill(0, count($paycodes), " payment_code like ? "));
+        $sql .= " ) and shop_id=" . (int) $store_id;
+        $rs = $db->execute($sql, $paycodes);
+
+        while ( !$rs->EOF ) {
+            $f = $rs->fields;
+            $ret [] = $f ['orders_id'];
+            $rs->moveNext();
+        }
+        return $ret;
+    }
 
     // return all order numbers that are "open" and relevant for transfer to kk
     public static function getOpenIDs()
@@ -22,7 +64,7 @@ class Komfortkasse_Order
         $sql_stores = "select shop_id from " . TABLE_MANDANT_CONFIG . " where shop_status=1";
         $param_store_ids = Komfortkasse_Config::getRequestParameter('s');
         if ($param_store_ids != '')
-            $sql_stores .= " and shop_id in (" . $param_store_ids . ")";
+            $sql_stores .= " and shop_id in (" . self::intList($param_store_ids) . ")";
 
         $rs_stores = $db->execute($sql_stores);
 
@@ -33,64 +75,20 @@ class Komfortkasse_Order
             $store_id_order ['store_id'] = $store_id;
 
             if (!Komfortkasse_Config::getConfig(Komfortkasse_Config::activate_export, $store_id_order)) {
+                $rs_stores->moveNext();
                 continue;
             }
 
             if (Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open, $store_id_order) != '' && Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods, $store_id_order) != '') {
-                $sql = "select orders_id from " . TABLE_ORDERS . " where orders_status in (" . Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open, $store_id_order) . ") and ( ";
-                $paycodes = preg_split('/,/', Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods, $store_id_order));
-                for($i = 0; $i < count($paycodes); $i++) {
-                    $sql .= " payment_code like '" . $paycodes [$i] . "' ";
-                    if ($i < count($paycodes) - 1) {
-                        $sql .= " or ";
-                    }
-                }
-                $sql .= " ) and shop_id=" . $store_id;
-                $rs = $db->execute($sql);
-
-                while ( !$rs->EOF ) {
-                    $f = $rs->fields;
-                    $ret [] = $f ['orders_id'];
-                    $rs->moveNext();
-                }
+                $ret = array_merge($ret, self::getOpenIDsFor(Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open, $store_id_order), Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods, $store_id_order), $store_id));
             }
 
             if (Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open_invoice, $store_id_order) != '' && Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods_invoice, $store_id_order) != '') {
-                $sql = "select orders_id from " . TABLE_ORDERS . " where orders_status in (" . Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open_invoice, $store_id_order) . ") and ( ";
-                $paycodes = preg_split('/,/', Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods_invoice, $store_id_order));
-                for($i = 0; $i < count($paycodes); $i++) {
-                    $sql .= " payment_code like '" . $paycodes [$i] . "' ";
-                    if ($i < count($paycodes) - 1) {
-                        $sql .= " or ";
-                    }
-                }
-                $sql .= " ) and shop_id=" . $store_id;
-                $rs = $db->execute($sql);
-
-                while ( !$rs->EOF ) {
-                    $f = $rs->fields;
-                    $ret [] = $f ['orders_id'];
-                    $rs->moveNext();
-                }
+                $ret = array_merge($ret, self::getOpenIDsFor(Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open_invoice, $store_id_order), Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods_invoice, $store_id_order), $store_id));
             }
 
             if (Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open_cod, $store_id_order) != '' && Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods_cod, $store_id_order) != '') {
-                $sql = "select orders_id from " . TABLE_ORDERS . " where orders_status in (" . Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open_cod, $store_id_order) . ") and ( ";
-                $paycodes = preg_split('/,/', Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods_cod, $store_id_order));
-                for($i = 0; $i < count($paycodes); $i++) {
-                    $sql .= " payment_code like '" . $paycodes [$i] . "' ";
-                    if ($i < count($paycodes) - 1) {
-                        $sql .= " or ";
-                    }
-                }
-                $sql .= " ) and shop_id=" . $store_id;
-                $rs = $db->execute($sql);
-
-                while ( !$rs->EOF ) {
-                    $f = $rs->fields;
-                    $ret [] = $f ['orders_id'];
-                    $rs->moveNext();
-                }
+                $ret = array_merge($ret, self::getOpenIDsFor(Komfortkasse_Config::getConfig(Komfortkasse_Config::status_open_cod, $store_id_order), Komfortkasse_Config::getConfig(Komfortkasse_Config::payment_methods_cod, $store_id_order), $store_id));
             }
 
             $rs_stores->moveNext();
@@ -102,7 +100,13 @@ class Komfortkasse_Order
 
     public static function getOrder($number)
     {
-        $order = new order($number, -1);
+        // order numbers are numeric orders_id values; anything else is not an order of this shop
+        $number = trim((string) $number);
+        if ($number === '' || !preg_match('/^[0-9]+$/', $number)) {
+            return null;
+        }
+
+        $order = new order((int) $number, -1);
         if (empty($number) || empty($order) || $number != $order->order_data ['orders_id']) {
             return null;
         }
@@ -114,7 +118,7 @@ class Komfortkasse_Order
         $ret ['status_name'] = $order->order_data ['orders_status'];
         $ret ['date'] = $order->order_data ['date_purchased'];
         $ret ['email'] = $order->order_data ['customers_email_address'];
-        $ret ['customer_number'] = $order->order_data [''];
+        $ret ['customer_number'] = null; // not provided (was order_data[''], an undefined key)
         $ret ['payment_method'] = $order->order_data ['payment_code'];
         $ret ['payment_name'] = $order->order_data ['payment_name'];
         $ret ['amount'] = $order->order_total ['total'] ['plain'];
