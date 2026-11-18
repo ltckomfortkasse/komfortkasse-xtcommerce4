@@ -213,9 +213,10 @@ class Komfortkasse
             $kpriv = Komfortkasse_Config::getRequestParameter('privateKey');
             $kpub = Komfortkasse_Config::getRequestParameter('publicKey');
             if ($subshops) {
-                foreach ($orders_store_id as $order_store_id)
+                foreach ($orders_store_id as $order_store_id) {
                     Komfortkasse_Config::setConfig(Komfortkasse_Config::privatekey, $kpriv, $order_store_id);
-                Komfortkasse_Config::setConfig(Komfortkasse_Config::publickey, $kpub, $order_store_id);
+                    Komfortkasse_Config::setConfig(Komfortkasse_Config::publickey, $kpub, $order_store_id);
+                }
             } else {
                 Komfortkasse_Config::setConfig(Komfortkasse_Config::privatekey, $kpriv);
                 Komfortkasse_Config::setConfig(Komfortkasse_Config::publickey, $kpub);
